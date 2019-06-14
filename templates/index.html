@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products for {{store_code}} store</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="jumbotron text-center">
+
+  <h1>GROVER.DE</h1>
+  <p>This test task has been prepared by DUDCHENKO Oleksandr</p>
+  <p>The position: DevOps engineer</p>
+</div>
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-3">
+
+      <label for="sel1">Select store (select one):</label>
+      <select class="form-control" id="sel1" onchange="javascript:location.pathname = '/'+this.value +'/{{availability_filter}}';">
+          {%- for store in store_codes %}
+        <option value="{{store}}" {%if store == store_code %}selected {% endif %}>{{store}}</option>
+          {%- endfor %}
+      </select>
+    </div>
+      <div class="col-sm-3">
+      <label for="sel2">filter:</label>
+      <select class="form-control" id="sel2" onchange="javascript:location.pathname = '/{{store_code}}/'+this.value;">
+        {%- for filtername in filters_list %}
+        <option value="{{filtername}}" {%if filtername == availability_filter %}selected {% endif %}>{{filtername}}</option>
+        {%- endfor %}
+      </select>
+    </div>
+  </div>
+  <h2>Stock for {{store_code}} </h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Category</th>
+        <th>Quantity</th>
+        <th>Availability</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in stock%}
+      <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.brand}}</td>
+        <td>{{item.category}}</td>
+        <td>{{item.quantity}}</td>
+        <td>{{item.available}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

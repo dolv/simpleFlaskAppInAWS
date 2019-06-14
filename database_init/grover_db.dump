@@ -1,0 +1,471 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.3 (Debian 11.3-1.pgdg90+1)
+-- Dumped by pg_dump version 11.3 (Debian 11.3-1.pgdg90+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+DROP DATABASE IF EXISTS "grover";
+--
+-- Name: grover; Type: DATABASE; Schema: -; Owner: dbuser
+--
+
+CREATE DATABASE "grover" WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.utf8' LC_CTYPE = 'en_US.utf8';
+
+
+ALTER DATABASE "grover" OWNER TO "dbuser";
+
+\connect "grover"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."alembic_version" (
+    "version_num" character varying(32) NOT NULL
+);
+
+
+ALTER TABLE "public"."alembic_version" OWNER TO "dbuser";
+
+--
+-- Name: brands; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."brands" (
+    "name" character varying(50) NOT NULL,
+    "description" "text"
+);
+
+
+ALTER TABLE "public"."brands" OWNER TO "dbuser";
+
+--
+-- Name: order_items; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."order_items" (
+    "id" bigint NOT NULL,
+    "user_id" character varying NOT NULL,
+    "price_id" bigint NOT NULL,
+    "quantity" bigint NOT NULL
+);
+
+
+ALTER TABLE "public"."order_items" OWNER TO "dbuser";
+
+--
+-- Name: orders; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."orders" (
+    "id" bigint NOT NULL,
+    "order_items" bigint[] NOT NULL,
+    "user_id" character varying(30) NOT NULL
+);
+
+
+ALTER TABLE "public"."orders" OWNER TO "dbuser";
+
+--
+-- Name: prices; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."prices" (
+    "id" bigint NOT NULL,
+    "product_id" bigint NOT NULL,
+    "store_id" bigint NOT NULL,
+    "price" real
+);
+
+
+ALTER TABLE "public"."prices" OWNER TO "dbuser";
+
+--
+-- Name: product_categories; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."product_categories" (
+    "category" character varying(100) NOT NULL
+);
+
+
+ALTER TABLE "public"."product_categories" OWNER TO "dbuser";
+
+--
+-- Name: products; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."products" (
+    "id" bigint NOT NULL,
+    "name" character varying(50) NOT NULL,
+    "description" "text",
+    "brand" character varying(50) NOT NULL,
+    "category" character varying(100) NOT NULL
+);
+
+
+ALTER TABLE "public"."products" OWNER TO "dbuser";
+
+--
+-- Name: stock; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."stock" (
+    "id" bigint NOT NULL,
+    "product_id" bigint NOT NULL,
+    "store_id" bigint NOT NULL,
+    "quantity" bigint NOT NULL
+);
+
+
+ALTER TABLE "public"."stock" OWNER TO "dbuser";
+
+--
+-- Name: stores; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."stores" (
+    "id" bigint NOT NULL,
+    "name" character varying(30),
+    "code" character varying(30)
+);
+
+
+ALTER TABLE "public"."stores" OWNER TO "dbuser";
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: dbuser
+--
+
+CREATE TABLE "public"."users" (
+    "name" character varying(30) NOT NULL,
+    "email" character varying(120) NOT NULL
+);
+
+
+ALTER TABLE "public"."users" OWNER TO "dbuser";
+
+--
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."alembic_version" ("version_num") VALUES ('da43704036a6');
+
+
+--
+-- Data for Name: brands; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."brands" ("name", "description") VALUES ('Apple', 'not available');
+INSERT INTO "public"."brands" ("name", "description") VALUES ('Samsung', 'not available');
+INSERT INTO "public"."brands" ("name", "description") VALUES ('HP', 'Hewlett Packard');
+INSERT INTO "public"."brands" ("name", "description") VALUES ('ASUS', 'n/a');
+
+
+--
+-- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."order_items" ("id", "user_id", "price_id", "quantity") VALUES (1, 'anonymous', 1, 1);
+
+
+--
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+
+
+--
+-- Data for Name: prices; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."prices" ("id", "product_id", "store_id", "price") VALUES (1, 1, 1, 1000);
+INSERT INTO "public"."prices" ("id", "product_id", "store_id", "price") VALUES (2, 3, 1, 1700);
+INSERT INTO "public"."prices" ("id", "product_id", "store_id", "price") VALUES (3, 3, 2, 1800);
+INSERT INTO "public"."prices" ("id", "product_id", "store_id", "price") VALUES (4, 2, 2, 400);
+
+
+--
+-- Data for Name: product_categories; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."product_categories" ("category") VALUES ('Mobile phones');
+INSERT INTO "public"."product_categories" ("category") VALUES ('PC');
+
+
+--
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."products" ("id", "name", "description", "brand", "category") VALUES (1, 'Apple iPhone 8 256GB Gold (MQ7H2)', '3G (WCDMA/UMTS), 2G (EDGE), 4G (LTE)', 'Apple', 'Mobile phones');
+INSERT INTO "public"."products" ("id", "name", "description", "brand", "category") VALUES (2, 'Laptop HP 250 G6 (4LT72ES) Dark Ash ', 'Superprice', 'HP', 'PC');
+INSERT INTO "public"."products" ("id", "name", "description", "brand", "category") VALUES (3, 'Samsung Galaxy S10 Plus 12GB/1TB Сeramic Black (SM', 'https://rozetka.com.ua/mobile-phones/c80003/', 'Samsung', 'Mobile phones');
+INSERT INTO "public"."products" ("id", "name", "description", "brand", "category") VALUES (4, 'Apple MacBook Pro 15" Retina Z0V100048 Space Grey ', 'Apple MacBook Pro 15" Retina Z0V100048 Space Grey (i9 2.9GHz/4TB SSD/32GB/Radeon Pro 560X with 4GB) with TouchBar', 'Apple', 'PC');
+INSERT INTO "public"."products" ("id", "name", "description", "brand", "category") VALUES (5, 'Asus X560UD-EJ443 (90NB0IP1-M07110) Black', 'not available', 'ASUS', 'PC');
+
+
+--
+-- Data for Name: stock; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."stock" ("id", "product_id", "store_id", "quantity") VALUES (1, 1, 1, 250);
+INSERT INTO "public"."stock" ("id", "product_id", "store_id", "quantity") VALUES (2, 1, 2, 10);
+INSERT INTO "public"."stock" ("id", "product_id", "store_id", "quantity") VALUES (3, 3, 1, 50);
+INSERT INTO "public"."stock" ("id", "product_id", "store_id", "quantity") VALUES (4, 2, 2, 42);
+INSERT INTO "public"."stock" ("id", "product_id", "store_id", "quantity") VALUES (5, 5, 1, 0);
+
+
+--
+-- Data for Name: stores; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."stores" ("id", "name", "code") VALUES (1, 'grover-de', 'grover-de');
+INSERT INTO "public"."stores" ("id", "name", "code") VALUES (2, 'mm-berlin', 'mm-berlin');
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: dbuser
+--
+
+INSERT INTO "public"."users" ("name", "email") VALUES ('anonymous', 'noname@nowhere.nodomain');
+
+
+--
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."alembic_version"
+    ADD CONSTRAINT "alembic_version_pkc" PRIMARY KEY ("version_num");
+
+
+--
+-- Name: brands brands_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."brands"
+    ADD CONSTRAINT "brands_pkey" PRIMARY KEY ("name");
+
+
+--
+-- Name: brands brend_names_are_unique_constraint; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."brands"
+    ADD CONSTRAINT "brend_names_are_unique_constraint" UNIQUE ("name");
+
+
+--
+-- Name: users name_email_combiantion_unique_constraint; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "name_email_combiantion_unique_constraint" UNIQUE ("name", "email");
+
+
+--
+-- Name: order_items orders_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."order_items"
+    ADD CONSTRAINT "orders_pkey" PRIMARY KEY ("id");
+
+
+--
+-- Name: orders orders_pkey1; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."orders"
+    ADD CONSTRAINT "orders_pkey1" PRIMARY KEY ("id");
+
+
+--
+-- Name: prices prices_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."prices"
+    ADD CONSTRAINT "prices_pkey" PRIMARY KEY ("id");
+
+
+--
+-- Name: product_categories product_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."product_categories"
+    ADD CONSTRAINT "product_categories_pkey" PRIMARY KEY ("category");
+
+
+--
+-- Name: products products_id_name_combination_unique_constraint; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "products_id_name_combination_unique_constraint" UNIQUE ("id", "name");
+
+
+--
+-- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "products_pkey" PRIMARY KEY ("id");
+
+
+--
+-- Name: stock stock_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stock"
+    ADD CONSTRAINT "stock_pkey" PRIMARY KEY ("id");
+
+
+--
+-- Name: stores store_id_code_unique_constraint; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stores"
+    ADD CONSTRAINT "store_id_code_unique_constraint" UNIQUE ("id", "code");
+
+
+--
+-- Name: stores stores_code_key; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stores"
+    ADD CONSTRAINT "stores_code_key" UNIQUE ("code");
+
+
+--
+-- Name: stores stores_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stores"
+    ADD CONSTRAINT "stores_pkey" PRIMARY KEY ("id");
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_email_key" UNIQUE ("email");
+
+
+--
+-- Name: users users_name_key; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_name_key" UNIQUE ("name");
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_pkey" PRIMARY KEY ("name");
+
+
+--
+-- Name: products brands_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "brands_foreign_key" FOREIGN KEY ("brand") REFERENCES "public"."brands"("name");
+
+
+--
+-- Name: products categorys_foreing_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."products"
+    ADD CONSTRAINT "categorys_foreing_key" FOREIGN KEY ("category") REFERENCES "public"."product_categories"("category");
+
+
+--
+-- Name: order_items order_items_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."order_items"
+    ADD CONSTRAINT "order_items_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("name");
+
+
+--
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."orders"
+    ADD CONSTRAINT "orders_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("name");
+
+
+--
+-- Name: order_items price_id_foreing_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."order_items"
+    ADD CONSTRAINT "price_id_foreing_key" FOREIGN KEY ("price_id") REFERENCES "public"."prices"("id");
+
+
+--
+-- Name: prices prices_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."prices"
+    ADD CONSTRAINT "prices_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
+
+
+--
+-- Name: stock product_foreing_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stock"
+    ADD CONSTRAINT "product_foreing_key" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id");
+
+
+--
+-- Name: stock store_foreing_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."stock"
+    ADD CONSTRAINT "store_foreing_key" FOREIGN KEY ("store_id") REFERENCES "public"."stores"("id") MATCH FULL;
+
+
+--
+-- Name: prices store_id_foreign_key; Type: FK CONSTRAINT; Schema: public; Owner: dbuser
+--
+
+ALTER TABLE ONLY "public"."prices"
+    ADD CONSTRAINT "store_id_foreign_key" FOREIGN KEY ("store_id") REFERENCES "public"."stores"("id");
+
+
+--
+-- PostgreSQL database dump complete
+--
+
