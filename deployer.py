@@ -2,19 +2,23 @@ import logging
 import boto3
 from deployer_config import Config
 from botocore.exceptions import ClientError
+from botocore.errorfactory import BaseClientExceptions
 import random
 import string
+import time
+import datetime
 import os, sys, re
 import fileinput
 from Crypto.PublicKey import RSA
 from utils.terraform_commands import *
 from utils.command_line_arguments import args
+from configparser import ConfigParser
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.INFO)
-logger.addHandler(log_handler)
+stdout_log_handler = logging.StreamHandler(sys.stdout)
+stdout_log_handler.setLevel(logging.INFO)
+logger.addHandler(stdout_log_handler)
 
 def set_environment_variables():
     os.environ['AWS_SHARED_CREDENTIALS_FILE'] = os.path.expanduser(
@@ -108,6 +112,51 @@ def generate_ssh_keys(
 
     return public_key_file
 
+def create_iam_user_for_ECR_interaction():
+    iam =  session.resource('iam')
+    user = iam.User(Config.aws['ecr_service_user'])
+    try:
+        user.load()
+        if args.from_scratch:
+            delete_iam_user(user)
+            user.create()
+    except ClientError:
+        user.create()
+        user.load()
+
+    policy_arns = [
+        'arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess',
+        'arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess'
+    ]
+    for arn in policy_arns:
+        user.attach_policy(PolicyArn=arn)
+
+    if args.create_ecr_user_credentials or args.from_scratch:
+        create_access_key_pair_for_iam_user(user)
+
+def delete_iam_user(user):
+    for policy in user.attached_policies.all():
+        user.detach_policy(PolicyArn=policy.arn)
+    for access_key in user.access_keys.all():
+        access_key.delete()
+    user.delete()
+
+def create_access_key_pair_for_iam_user(user):
+    access_key_pair = user.create_access_key_pair()
+    write_iam_user_credentials_to_file(access_key_pair)
+    return access_key_pair
+
+def write_iam_user_credentials_to_file(access_key_pair):
+    credentials = ConfigParser()
+    credentials.add_section(access_key_pair.user_name)
+    credentials[access_key_pair.user_name] = {
+        'aws_access_key_id': access_key_pair.id,
+        'aws_secret_access_key': access_key_pair.secret
+    }
+    with open("{}_credentials.ini".format(access_key_pair.user_name),
+              'w') as ini_file:
+        credentials.write(ini_file)
+
 
 def configure(*args, **kwargs):
     adjust_terraform_config(get_tfstate_bucket_name())
@@ -118,6 +167,7 @@ def configure(*args, **kwargs):
             default_ssh_public_key_location)
     else:
         adjust_ssh_public_key_reference(generate_ssh_keys())
+    access_key_pair = create_iam_user_for_ECR_interaction()
     logging.info(f'Configuration stage completed...')
     logging.info(f'Consider double-checking main.tf and variables.tf files for correctness before executing further stages like init, plan or deploy...')
 

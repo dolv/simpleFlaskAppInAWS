@@ -1,5 +1,4 @@
 from .terraform import *
-from deployer import logger
 
 terraform = Terraform()
 

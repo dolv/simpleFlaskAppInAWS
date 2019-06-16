@@ -5,7 +5,8 @@ class Config:
         'shared_credentials_file': '~/.aws/credentials',
         'credentials_profile': 'grover-test-account',
         'region': 'eu-central-1',
-        'aws_account_id': ''
+        'aws_account_id': '',
+        'ecr_service_user': 'ecr_service_user'
     }
     ssh={
         'folder': 'ssh',

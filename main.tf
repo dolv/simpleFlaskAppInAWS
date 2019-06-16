@@ -319,7 +319,7 @@ resource "aws_launch_configuration" "lc-jslave" {
   image_id      = data.aws_ami.jslave.id
   instance_type = "t2.micro"
   key_name = aws_key_pair.admin_ssh_key.key_name
-  iam_instance_profile = aws_iam_instance_profile.escInctanceProfile.name
+  iam_instance_profile ="grover-test-account"
   user_data = <<-EOF
     #!/bin/bash
     yum install -y ecs-init
