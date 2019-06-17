@@ -1,3 +1,3 @@
 output "alb_hostname" {
-  value = "${aws_lb.main.dns_name}"
+  value = module.networking.app_lb_dns_name
 }

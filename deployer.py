@@ -130,7 +130,6 @@ def create_iam_user_for_ECR_interaction():
     ]
     for arn in policy_arns:
         user.attach_policy(PolicyArn=arn)
-
     if args.create_ecr_user_credentials or args.from_scratch:
         create_access_key_pair_for_iam_user(user)
 
