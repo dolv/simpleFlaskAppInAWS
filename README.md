@@ -35,4 +35,9 @@ cd simpleFlaskAppInAWS
 * then we need to bring up the infrastructure in AWS needed for the application DEMO. And we will be using Terraform. To make terrafrom be able to create resources on behalf of us it need AWS credentials. Edit shared credentials file `~/.aws/credentials` and substitute AAAAA... and BBBBB... with correct values for `aws_access_key_id` and `aws_secret_access_key`.
 * (in progress) run `deploy.sh` to create the infrastructure resources in AWS, spin-up jenkins in docker container on the localhost and trigger needed jobs one-by-one to bring the demo application up.
 
+## Configuration
+There are two configuration file the one might be interested to look into:
+* the flask application config file is `config.py`
+* the deployer script configuration is in `deployer_config.py`
+
 
