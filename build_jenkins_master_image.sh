@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 tee .dockerignore <<-'EOF'
 *
 !init.groovy.d/**

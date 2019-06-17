@@ -1,0 +1,166 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+buildscript {
+    def currentDir = System.getProperty("user.home")
+    def repositoryThirdParty = "file://$currentDir/.groovy/grapes/"
+    def repoPattern = '[module]/[artifact]/[artifact](-[classifier])(-[revision]).[ext]'
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        ivy {
+            ivyPattern repositoryThirdParty + repoPattern
+            artifactPattern repositoryThirdParty + repoPattern
+        }
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: "io.spring.dependency-management"
+
+group = 'ua.kiev.dudchenko.oleksandr'
+version = '0.1.0'
+
+configure(install.repositories.mavenInstaller) {
+    pom.project {
+        version version
+        artifactId 'jenkinsscripts'
+        groupId group
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    maven{
+        url ='http://repo.jenkins-ci.org/releases/'
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        groovy {
+            // all code files will be in either of the folders
+            srcDirs += ['src', 'vars']
+        }
+        resources {
+            srcDirs += ['resources']
+        }
+    }
+    test {
+        java {
+            srcDirs += ['test']
+        }
+        groovy {
+            // all code files will be in either of the folders
+            srcDirs += ['test']
+        }
+        resources {
+            srcDirs += ['resources']
+        }
+    }
+}
+
+
+dependencies {
+    // Use the latest Groovy version for building this library
+    implementation 'org.codehaus.groovy:groovy-all:2.5.6'
+    implementation 'com.cloudbees.jenkins.plugins:scalable-amazon-ecs:1.0'
+    // Use the awesome Spock testing and specification framework
+    testImplementation 'org.spockframework:spock-core:1.2-groovy-2.5'
+    testImplementation 'junit:junit:4.12'
+    testImplementation group: 'org.testng', name: 'testng', version: '6.14.3'
+
+    compile "org.codehaus.groovy:groovy-all:2.5.6"
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.2'
+    compile group: 'org.testng', name: 'testng', version: '6.14.3'
+    compile group:  'com.cloudbees.jenkins.plugins', name: 'scalable-amazon-ecs', version:'1.0'
+
+
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
+    testCompile "com.lesfurets:jenkins-pipeline-unit:1.1"
+    testCompile "junit:junit:4.12"
+    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+}
+
+task testng(type: Test) {
+    useTestNG(){
+        useDefaultListeners = true
+        suites('test/testng.xml')
+    }
+    reports.html.enabled = true
+
+    beforeSuite { descriptor ->
+        logger.lifecycle("====================================================")
+        logger.lifecycle("Running suite: " + descriptor)
+    }
+
+//    beforeTest { descriptor ->
+//        logger.lifecycle("Running test: " + descriptor)
+//    }
+
+    // Fail the 'test' task on the first test failure
+    failFast = true
+
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_ERROR"
+    }
+
+}
+
+test {
+
+    // delete old test reports
+    dependsOn cleanTest
+
+    // don't stop if tests fail
+    ignoreFailures = false
+
+    // minimize logging
+    testLogging.maxGranularity = 0
+
+    // show stdout from tests
+    onOutput { dest, event -> print event.message }
+    // show test results
+    def results = []
+    afterTest { desc, result -> println "${desc.className.split("\\.")[-1]}: " +
+            "${desc.name}: ${result.resultType}" }
+    afterSuite { desc, result -> if (desc.className) { results << result } }
+
+    // show summary
+    doLast {
+        println "Tests: ${results.sum { it.testCount }}" +
+                ", Failures: ${results.sum { it.failedTestCount }}" +
+                ", Errors: ${results.sum { it.exceptions.size() }}" +
+                ", Skipped: ${results.sum { it.skippedTestCount }}"
+    }
+
+}
+
+def buildAliases = [
+    'test' : ['testng', 'test']
+]
+
+def expandedTaskList = []
+
+gradle.startParameter.taskNames.each {
+    expandedTaskList << (buildAliases[it] ? buildAliases[it] : it)
+}
+
+gradle.startParameter.taskNames = expandedTaskList.flatten()
+
+println "\n\n\texpanded task list: ${gradle.startParameter.taskNames }\n\n"

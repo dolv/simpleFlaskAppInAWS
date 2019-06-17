@@ -1,11 +1,9 @@
 FROM jenkins/jenkins:lts
 
 COPY jenkins_plugins.txt /usr/share/jenkins/ref/plugins.txt
-COPY init.groovy.d/* /usr/share/jenkins/ref/init.groovy.d/
-COPY *_credentials.ini /usr/share/jenkins/ref/init.groovy.d/
 
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
-RUN rm /usr/share/jenkins/ref/init.groovy.d/*_credentials.ini
+
 USER root
 RUN apt-get update && apt-get install -y awscli
 #
